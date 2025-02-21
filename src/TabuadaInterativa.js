@@ -19,20 +19,41 @@ const TabuadaInterativa = () => {
     const utterance = new SpeechSynthesisUtterance();
     utterance.lang = 'pt-PT';
     
-    // Ajustes para voz mais musical
-    utterance.pitch = mostrarResultado ? 1.4 : 1.2;
-    utterance.rate = 0.85;
-    utterance.volume = 1;
+    // Ajustes para voz mais alegre e musical
+    utterance.pitch = mostrarResultado ? 1.6 : 1.3;  // Tom mais alto = mais alegre
+    utterance.rate = 0.9;                            // Velocidade um pouco mais rápida
+    utterance.volume = 1;                            // Volume máximo
     
     if (mostrarResultado) {
       utterance.text = `${resultado}`;
-      utterance.pitch = 1.5;
+      // Tom ainda mais alto e animado para o resultado
+      utterance.pitch = 1.7;
     } else {
       utterance.text = `${num} vezes ${mult}`;
-      utterance.pitch = 1.2;
+      // Mais variação no tom para soar mais musical
+      utterance.pitch = 1.3;
     }
     
-    synth.speak(utterance);
+    // Tente obter vozes disponíveis e escolher uma feminina se disponível
+    setTimeout(() => {
+      const voices = synth.getVoices();
+      const ptVoices = voices.filter(voice => voice.lang.includes('pt'));
+      
+      // Tente encontrar uma voz feminina em português
+      if (ptVoices.length > 0) {
+        // Preferir vozes que têm "female" no nome ou que são conhecidas por serem femininas
+        const femaleVoice = ptVoices.find(voice => 
+          voice.name.toLowerCase().includes('female') || 
+          voice.name.toLowerCase().includes('joana') ||
+          voice.name.toLowerCase().includes('inês') ||
+          voice.name.toLowerCase().includes('female')
+        );
+        
+        utterance.voice = femaleVoice || ptVoices[0];
+      }
+      
+      synth.speak(utterance);
+    }, 0);
   };
 
   const proximaOperacao = () => {
